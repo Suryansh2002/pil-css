@@ -328,3 +328,33 @@ def change_background(image: Image.Image, background: Ink, alpha: int = 180):
     new_image = Image.new("RGBA", image.size, background)
     new_image.paste(image, (0, 0), image)
     return new_image
+
+
+def position_relative(
+    base: Image.Image,
+    image: Image.Image, *,
+    top: int|None = None,
+    bottom: int|None = None,
+    left: int|None = None,
+    right: int|None = None,
+):
+    if top and bottom:
+        raise ValueError("Cannot set both top and bottom")
+    if left and right:
+        raise ValueError("Cannot set both left and right")
+    
+    if top is None and bottom is None:
+        top = 0
+    if left is None and right is None:
+        left = 0
+
+    if bottom is not None:
+        top = base.height - bottom - image.height
+    if right is not None:
+        left = base.width - right - image.width
+
+    assert top is not None, "Top must be set"
+    assert left is not None, "Left must be set" 
+
+    base.paste(image, (left, top), image)
+    return base
